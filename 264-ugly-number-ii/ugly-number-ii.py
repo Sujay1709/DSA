@@ -1,22 +1,27 @@
-import heapq
 class Solution:
     def nthUglyNumber(self, n: int) -> int:
-        minHeap = [] # minHeap to store and retrieve the smallest ugly number
+        ugly_numbers = [0] * n # DP array to store ugly numbers
+        ugly_numbers[0] = 1 # The first ugly number is 1
 
-        seen_numbers = set() # set to avoid duplicates
-        prime_factors = [2,3,5] # factors for generating new ugly numbers
+        #Three pointers for the multiples of 2,3 and 5
+        index_multiple_of_2, index_multiple_of_3, index_multiple_of_5 = 0,0,0
+        next_multiple_of_2, next_multiple_of_3, next_multiple_of_5 = 2,3,5
 
-        heapq.heappush(minHeap, 1)
-        seen_numbers.add(1)
+        #Generate ugly numbers until we reach the nth one
+        for i in range(1, n):
+            #Find the next ugly number as the minimun of the next multiples
+            next_ugly_number = min([next_multiple_of_2, next_multiple_of_3,next_multiple_of_5])
+            ugly_numbers[i] = next_ugly_number
+            
+            #Update the corresponding pointer and next multiple
+            if next_ugly_number == next_multiple_of_2:
+                index_multiple_of_2 += 1
+                next_multiple_of_2 = ugly_numbers[index_multiple_of_2] *2 
+            if next_ugly_number == next_multiple_of_3:
+                index_multiple_of_3 += 1
+                next_multiple_of_3 = ugly_numbers[index_multiple_of_3] * 3
+            if next_ugly_number == next_multiple_of_5:
+                index_multiple_of_5 += 1
+                next_multiple_of_5 = ugly_numbers[index_multiple_of_5] * 5
 
-        current_ugly = 1
-        for _ in range(n):
-            current_ugly=heapq.heappop(minHeap) # get the smallest number
-
-            # generate and push the next ugly numbers
-            for prime in prime_factors:
-                next_ugly = current_ugly * prime
-                if next_ugly not in seen_numbers:   #avoid duplicates
-                    heapq.heappush(minHeap, next_ugly)
-                    seen_numbers.add(next_ugly)
-        return current_ugly
+        return ugly_numbers[n-1]
