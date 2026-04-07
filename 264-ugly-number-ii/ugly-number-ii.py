@@ -1,21 +1,22 @@
+import heapq
 class Solution:
     def nthUglyNumber(self, n: int) -> int:
-        # SET TO STORE POTENTIAL UGLY NUMBERS
-        ugly_numbers_set = set()
-        # Start with 1, the first ugly number
-        ugly_numbers_set.add(1)
+        minHeap = [] # minHeap to store and retrieve the smallest ugly number
+
+        seen_numbers = set() # set to avoid duplicates
+        prime_factors = [2,3,5] # factors for generating new ugly numbers
+
+        heapq.heappush(minHeap, 1)
+        seen_numbers.add(1)
 
         current_ugly = 1
-        for i in range(n):
-            #Get the smallest number from the set
-            current_ugly = min(ugly_numbers_set)
-            #Remove it from the set
-            ugly_numbers_set.remove(current_ugly)
+        for _ in range(n):
+            current_ugly=heapq.heappop(minHeap) # get the smallest number
 
-            #Insert the next potential ugly numbers
-            ugly_numbers_set.add(current_ugly*2)
-            ugly_numbers_set.add(current_ugly*3)
-            ugly_numbers_set.add(current_ugly*5)
-
-        # Return the nth ugly number
+            # generate and push the next ugly numbers
+            for prime in prime_factors:
+                next_ugly = current_ugly * prime
+                if next_ugly not in seen_numbers:   #avoid duplicates
+                    heapq.heappush(minHeap, next_ugly)
+                    seen_numbers.add(next_ugly)
         return current_ugly
